@@ -1,0 +1,78 @@
+/* ref: https://www.ag-grid.com/react-data-grid/global-style-customisation-sass/?ref=blog.ag-grid.com */
+@use "~ag-grid-community/styles" as ag;
+@include ag.grid-styles((
+  theme: moser,
+  extend-theme: balham,
+
+    /*
+    .ag-header
+    .ag-header-icon: icons like the sort arrows, filter hamburger
+    .ag-multi-filter-group-title-bar: column headers
+    .ag-row, .ag-row-odd
+    */
+    balham-active-color: #0091ea,
+
+    // main colours
+    foreground-color: #000,
+    secondary-foreground-color: #90B13E,
+    disabled-foreground-color: rgba(0, 0, 0, 0.38),
+    background-color: white,
+    header-background-color: #50535F,
+    //header-foreground-color: #90B13E,
+    subheader-background-color: #7A7F91,
+    //control-panel-background-color: #f5f7f7,
+    //border-color: #bdc3c7,
+    //row-border-color: ag-derived(border-color, $lighten: 10),
+    odd-row-background-color: #F5F7FF,
+    row-hover-color: #7A7F91,
+    //input-border-color: #95a5a6,
+    //input-disabled-background-color: #ebebeb,
+    //checkbox-unchecked-color: #7f8c8d,
+    checkbox-checked-color: var(--ag-balham-active-color),
+    checkbox-background-color: var(--ag-background-color),
+
+    //input-focus-border-color: #719ECE,
+    input-focus-box-shadow: 0 0 2px 1px var(input-focus-border-color),
+
+    // derived colours
+    subheader-toolbar-background-color: rgba(122, 127, 145, 0.5),
+    range-selection-background-color: rgba(0, 145, 234, 0.2),
+    range-selection-border-color: var(balham-active-color),
+    range-selection-highlight-color: var(balham-active-color),
+
+    selected-row-background-color: rgba(0, 145, 234, 0.28),
+    //chip-background-color: ag-derived(control-panel-background-color, $mix: foreground-color 10%),
+    header-cell-moving-background-color: var(background-color),
+
+    //header-column-separator: true,
+    //header-column-separator-color: rgba(189, 195, 199, 0.5),
+    //header-column-separator-height: 50%,
+
+    // sizing
+    //grid-size: 4px,
+    //icon-size: 16px,
+    row-height: calc(var(--ag-grid-size) * 5),
+    //header-height: calc(var(--ag-grid-size) * 8),
+    //list-item-height: calc(var(--ag-grid-size) * 6),
+    //row-group-indent-size: calc(var(--ag-grid-size) * 3 + var(--ag-icon-size)),
+    cell-horizontal-padding: calc(var(--ag-grid-size) * 1),
+    //input-height: calc(var(--ag-grid-size) * 4),
+
+    // Fonts
+    font-family: (sans-serif),
+    font-size: 13px,
+    //icon-font-family: agGridBalham,
+    //icons-data: $ag-theme-balham-icons-data,
+    //icons-font-codes: $ag-theme-balham-icons-font-codes,
+
+    // Misc
+    border-radius: 2px,
+    //checkbox-border-radius: 3px,
+    card-shadow: none,
+));
+
+.ag-cell-wrap-text {
+    white-space: normal;
+    word-break: break-word;
+}
+

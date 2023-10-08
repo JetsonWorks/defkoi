@@ -1,4 +1,4 @@
-node/jetson/dist
+dknode/defkon/dist
 .directory
 .gradle
 gradle/
@@ -19,7 +19,7 @@ mvnw*
 package-lock.json
 
 models.json
-**/*.png
 lombok.config
-media/
 .vagrant/
+.certs/
+.djl.ai/

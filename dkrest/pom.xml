@@ -1,0 +1,301 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>dkrest</artifactId>
+    <name>dkrest</name>
+    <version>0.3</version>
+    <packaging>jar</packaging>
+    <description>Sentry app</description>
+
+    <parent>
+        <groupId>com.jit</groupId>
+        <artifactId>defkoi</artifactId>
+        <version>0.3</version>
+    </parent>
+
+    <properties>
+        <java.version>13</java.version>
+        <maven.compiler.source>13</maven.compiler.source>
+        <maven.compiler.target>13</maven.compiler.target>
+        <djl.version>0.16.0</djl.version>
+        <jna.version>5.11.0</jna.version>
+        <gst1.version>1.4.0</gst1.version>
+        <mxnet.version>1.8.0</mxnet.version>
+        <pytorch.version>1.10.0</pytorch.version>
+        <tensorflow.version>2.4.1</tensorflow.version>
+        <spring.version>2.7.0</spring.version>
+        <spring.security.version>5.7.1</spring.security.version>
+        <spring.cloud.starter.config.version>3.1.3</spring.cloud.starter.config.version>
+        <keycloak.version>15.0.2</keycloak.version>
+        <postgresql.version>42.4.0</postgresql.version>
+        <h2.version>2.1.214</h2.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>ai.djl</groupId>
+                <artifactId>bom</artifactId>
+                <version>${djl.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak.bom</groupId>
+                <artifactId>keycloak-adapter-bom</artifactId>
+                <version>${keycloak.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oblac</groupId>
+            <artifactId>nomen-est-omen</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+
+        <!-- GStreamer -->
+        <dependency>
+            <groupId>org.freedesktop.gstreamer</groupId>
+            <artifactId>gst1-java-core</artifactId>
+            <version>${gst1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna-platform</artifactId>
+            <version>${jna.version}</version>
+        </dependency>
+
+        <!-- DJL -->
+        <!-- https://github.com/deepjavalibrary/djl-spring-boot-starter#spring-djl-mxnet-autoconfiguration -->
+        <dependency>
+            <groupId>ai.djl</groupId>
+            <artifactId>api</artifactId>
+        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>ai.djl</groupId>-->
+        <!--            <artifactId>basicdataset</artifactId>-->
+        <!--        </dependency>-->
+        <!-- only needed for demo purposes
+        <dependency>
+            <groupId>ai.djl</groupId>
+            <artifactId>model-zoo</artifactId>
+            <scope>runtime</scope>
+        </dependency> -->
+
+        <!-- REST & JPA -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-rest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+
+        <!-- security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring.security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-spring-security-adapter</artifactId>
+            <version>${keycloak.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-spring-boot-starter</artifactId>
+            <version>${keycloak.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.4</version>
+        </dependency>
+
+        <!-- runtime -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <version>${spring.cloud.starter.config.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+            <version>${spring.cloud.starter.config.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <!-- MXNet for PC -->
+        <profile>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <id>mxnet</id>
+            <dependencies>
+                <!-- This will download the correct artifact at runtime (provided external internet egress is enabled),
+                  including Windows specific artifacts:
+                <dependency>
+                    <groupId>ai.djl.spring</groupId>
+                    <artifactId>djl-spring-boot-starter-mxnet-auto</artifactId>
+                    <version>${djl.starter.version}</version>
+                </dependency> -->
+                <dependency>
+                    <groupId>ai.djl.mxnet</groupId>
+                    <artifactId>mxnet-engine</artifactId>
+                    <version>${djl.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <!-- See https://github.com/deepjavalibrary/djl/blob/master/engines/mxnet/mxnet-engine/README.md
+                          for more MXNet library selection options -->
+                    <groupId>ai.djl.mxnet</groupId>
+                    <artifactId>mxnet-native-auto</artifactId>
+                    <version>${mxnet.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>ai.djl.mxnet</groupId>
+                    <artifactId>mxnet-model-zoo</artifactId>
+                    <version>${djl.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <!-- PyTorch for Jetson -->
+        <profile>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <id>pytorch</id>
+            <dependencies>
+                <!-- Auto configuration for PyTorch (the correct OS specific artifact is downloaded at runtime)
+                <dependency>
+                    <groupId>ai.djl.spring</groupId>
+                    <artifactId>djl-spring-boot-starter-pytorch-auto</artifactId>
+                    <version>${djl.starter.version}</version>
+                </dependency> -->
+                <dependency>
+                    <groupId>ai.djl.pytorch</groupId>
+                    <artifactId>pytorch-engine</artifactId>
+                    <version>${djl.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <!-- See https://github.com/deepjavalibrary/djl/blob/master/engines/pytorch/README.md
+                      for more PyTorch library selection options -->
+                <!--        <dependency>-->
+                <!--            <groupId>ai.djl.pytorch</groupId>-->
+                <!--            <artifactId>pytorch-native-auto</artifactId>-->
+                <!--            <scope>runtime</scope>-->
+                <!--        </dependency>-->
+                <dependency>
+                    <groupId>ai.djl.pytorch</groupId>
+                    <artifactId>pytorch-native-cu102</artifactId>
+                    <version>${pytorch.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>ai.djl.pytorch</groupId>
+                    <artifactId>pytorch-model-zoo</artifactId>
+                    <version>${djl.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <id>postgresql</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <version>${postgresql.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <id>h2</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                    <version>${h2.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.zaxxer</groupId>
+                    <artifactId>HikariCP</artifactId>
+                    <version>4.0.3</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>13</source>
+                    <target>13</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

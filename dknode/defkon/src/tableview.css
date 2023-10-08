@@ -1,0 +1,110 @@
+.css-tableview {
+  display: table;
+}
+
+.css-tableview ul {
+  padding: 2px;
+  margin: 2px;
+}
+
+.css-tableview.grid ul {
+  padding: 0px;
+  border: ridge #5F7583;
+  border-top-width: 1px;
+  border-right-width: 0;
+  border-bottom-width: 0;
+  border-left-width: 1px;
+}
+
+.css-tableview li {
+  display: table-row-group;
+  list-style: none;
+}
+
+.css-tableview li label {
+  display: table-cell;
+  padding: 3px;
+}
+
+.css-tableview.grid li label {
+  border: ridge #5F7583;
+  border-top-width: 0;
+  border-right-width: 1px;
+  border-bottom-width: 1px;
+  border-left-width: 0;
+}
+
+.css-tableview ul.vertical li label:nth-child(1) {
+  text-align: right;
+  font-weight: bold;
+}
+
+.css-tableview ul.vertical li select:nth-child(2) {
+  float: left;
+}
+
+.css-tableview input:not(:checkbox), .css-tableview select {
+  display: table-cell;
+  text-align: left;
+  padding: 3px;
+  width: 20em;
+}
+
+.css-tableview .errorLabel {
+  text-align: left;
+  font-style: oblique;
+  padding-left: 1em;
+}
+
+.css-tableview p {
+  color: #5F7583;
+  text-decoration: none;
+}
+
+.css-tableview p:hover {
+  text-decoration: underline;
+}
+
+.table-header-group {
+  display: table-header-group;
+  font-weight: bold;
+  background-color: #50535F;
+  color: #90B13E;
+}
+
+.table-header-group p {
+  font-weight: bold;
+  color: #90B13E;
+  text-decoration: none;
+}
+
+.table-head, .table-cell {
+  display: table-cell;
+  padding: 5px;
+}
+
+.table-head {
+  font-weight: bold;
+  background-color: lightgray;
+}
+
+.table-row-group {
+  display: table-row-group;
+}
+
+/* webkit adjacent element selector bugfix */
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  .css-tableview {
+    -webkit-animation: webkit-adjacent-element-selector-bugfix infinite 1s;
+  }
+  @-webkit-keyframes webkit-adjacent-element-selector-bugfix {
+    from {
+      padding: 0;
+    }
+    to {
+      padding: 0;
+    }
+  }
+}
+
