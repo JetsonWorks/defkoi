@@ -13,7 +13,7 @@ pushd dkrest
 if arch |grep -q x86_64 ; then
   mvn -Pmxnet -Ppostgresql spring-boot:run
 else
-  mvn -Ppytorch -Ppostgresql spring-boot:run -Dspring-boot.run.jvmArguments="-Dai.djl.default_engine=PyTorch"
+  mvn -Ppytorch -Ppostgresql spring-boot:run
 fi
 popd
 

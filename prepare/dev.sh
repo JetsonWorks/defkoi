@@ -16,12 +16,8 @@ source "$HOME/.sdkman/bin/sdkman-init.sh"
 sdk install maven 3.8.8
 
 # extract DJL native libs
-[ -d /home/$user/.djl.ai/pytorch/$djlBuild-cu102-linux-aarch64 ] || {
-  mkdir -p /home/$user/.djl.ai/pytorch
-  cd /home/$user/.djl.ai/pytorch
-  # TODO: provide in separate repo
-  tar zxf $projdir/deps/$pytorchBuild-$djlBuild.tgz
-}
+[ -d /home/$user/.djl.ai/pytorch/$djlBuild-cu102-linux-aarch64 ] ||
+  docker cp defkoi-dkrest-1:/root/.djl.ai $HOME/.djl.ai
 
 # build the app and the Docker images
 cd $projdir/dkrest
@@ -29,10 +25,6 @@ mvn package
 cd ..
 
 # build images locally
-docker compose build ffmpeg
-docker compose build
+docker compose --profile defkoi build
 
-# or pull from Docker hub
-docker compose pull
-
-docker compose up -d dkdb
+docker compose --profile defkoi up -d dkdb rtspproxy

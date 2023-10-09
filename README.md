@@ -13,7 +13,7 @@ the GStreamer library to Java, enabling pipelines for video transformation and s
 ## Features
 
 * Multiple inferencing engines supported by DJL
-  * The pre-built PyTorch native libraries for aarch64 available are included
+  * The pre-built PyTorch native libraries for DJL on aarch64 are included
 * Cross-platform compatibility (for example: developing on amd64 using the MXNet engine and deploying on aarch64 using the PyTorch engine)
 * Multi-threaded GStreamer pipelines supporting multiple active video sources
 * Auto-probed CSI and V4L2 devices, and auto-configuration based on user-specified constraints
@@ -23,16 +23,12 @@ the GStreamer library to Java, enabling pipelines for video transformation and s
 * GPU-accelerated video processing from CSI sources via nvidia-l4t-gstreamer
 * Publishing of camera feeds to an on-board RTSP proxy
 
-## Upcoming Features
+## Requirements
 
-* Motion detection, which can conditionally trigger object detection
-* Multi-threaded object detection to take full advantage of the GPU
-* Support for JetPack 4.6.1, including:
-  * PyTorch 1.12.1
-    * upgraded from 1.10.0
-    * custom-built - not provided by NVIDIA
-  * DJL 0.23.0
-* TODO
+* A Jetson Nano
+  * Or a similar SBC of your choice, compatible with PyTorch 1.10.0 on CUDA 10.2
+* 32 GB storage for OS and apps
+* A separate server for the front-end services
 
 # Usage
 
@@ -68,7 +64,7 @@ The ```system.sh``` script can install and configure dependencies and prepare yo
 1. Update /etc/hosts
    1. Associate your PC's IP address with defkon.jit.com
    1. Associate your Jetson's IP address with defkoi.jit.com
-1. Start the dkrest service
+1. Start the services
    1. ```docker compose --profile defkoi up```
 
 ## Operation
@@ -78,7 +74,51 @@ Once the dkrest application has started on your Jetson, you may access it using 
 1. Update settings as desired
    1. Once settings are saved, the application will reinitialize
 
+Before you can publish live streams to the RTSP proxy, you must update the configuration.
+When the rtspproxy service started, it saved the default mediamtx.yml in /var/media.
+Update the configuration to disable any paths that would use the same video devices being used by DefKoi, and then define a "live" path for each camera you wish to stream.
+Each URL ends with the display name of the camera (with no spaces), which is displayed on the Devices tab in DefKon.
+
 TODO:
 * configure.sh
-* tweak mediamtx.yaml for /live and /object
+* tweak mediamtx.yml for /live and /object
+
+## Running dkrest on the Jetson host (not in Docker)
+
+The ```prepare/dev.sh``` script can help you configure your Jetson for running dkrest natively by:
+
+1. Installing the remaining dependencies
+2. Extracting the PyTorch native libraries for DJL
+3. Building the dkrest app and the Docker image
+
+Use the ```bootRun``` wrapper script to launch the dkrest app.
+When the app terminates, the pngPipeline script will convert any Graphviz DOT files saved in /tmp into PNGs and store them in the debug directory.
+
+# Known Issues
+
+The object detection functionality is leaking memory.
+I suspect either the PyTorch or DJL library.
+
+# Upcoming Features
+
+* Motion detection, which can conditionally trigger object detection
+* Multi-threaded object detection, to take full advantage of the GPU
+* Support for JetPack 4.6.x (max for Jetson Nano)
+    * With custom-built libraries, maxing out the compatibility matrices
+        * PyTorch 1.12.1
+            * upgraded from 1.10.0
+            * not available from NVIDIA until JP 5
+        * DJL 0.23.0
+            * upgraded from 0.16.0
+* Support for other SBCs (I broke my Nano's CSI interface and don't want to pay $500 for a Jetson Orin Nano)
+* Fix the detected object RTSP stream
+* Spatial awareness
+* Support for other inference engines
+* MediaMTX auto-configuration
+
+# Contributing
+
+* plug memory leak
+* build native libs for tensor
+* improve the interface
 
