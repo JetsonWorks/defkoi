@@ -52,17 +52,16 @@ public class DefKoiRestSecurity extends KeycloakWebSecurityConfigurerAdapter {
     // @formatter:on
   }
 
-  @Bean
+//  @Bean
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList("https://keycloak.jit.com:8443", "https://defkon.jit.com:8086"));
+    configuration.setAllowedOriginPatterns(Arrays.asList("https://*.jit.com:[*]"));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "OPTIONS"));
     configuration.setAllowedHeaders(
       Arrays.asList("Accept", "Accept-Encoding", "Accept-Language", "Access-Control-Allow-Credentials", "Authorization",
         "Connection", "Cookie", "Content-Type", "DNT", "Host", "Origin", "Referer", "User-Agent", "X-XSRF-TOKEN",
         "X-DKREST-XSRF", "X-Requested-With"));
-    configuration.setAllowCredentials(true);
-    configuration.setAllowedOriginPatterns(Arrays.asList("https://*.jit.com:[*]"));
+//    configuration.setAllowCredentials(true);
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
