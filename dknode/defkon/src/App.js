@@ -14,8 +14,8 @@ import Dash from "./view/Dash";
 import { CapabilitiesPage, DevicesPage, PipeConfsPage } from "./search/SearchPages";
 
 import "./App.scss";
-import { getAvailableResolutions, getConfig, getDeviceApis, getPrefs, hasRoleOperator, setAuth, statsDaemon } from "./features/metadata/MdSlice";
-import { refreshDaemon } from "./features/cache/CacheSlice";
+import { getAvailableResolutions, getConfig, getDeviceApis, getPrefs, hasRoleOperator, setAuth, startStatsDaemon } from "./features/metadata/MdSlice";
+import { startRefreshDaemon } from "./features/cache/CacheSlice";
 
 export const restUrl = process.env.REACT_APP_restUrl + "model/";
 
@@ -58,8 +58,8 @@ function App(props) {
 
     dispatch(setAuth(auth.user.profile));
     dispatch(getPrefs());
-    dispatch(refreshDaemon());
-    dispatch(statsDaemon());
+    dispatch(startRefreshDaemon());
+    dispatch(startStatsDaemon());
     dispatch(getConfig());
     dispatch(getDeviceApis());
     dispatch(getAvailableResolutions());

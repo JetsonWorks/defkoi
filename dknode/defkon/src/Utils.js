@@ -15,6 +15,7 @@ export function doRequest(method, url, params, preMsg, postMsg) {
   let promise = $.ajax({
     method: method,
     url: url,
+    xhrFields: { withCredentials: true },
     data: params
   });
   toast.promise(promise, {

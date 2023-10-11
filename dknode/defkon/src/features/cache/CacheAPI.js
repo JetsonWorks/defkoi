@@ -10,6 +10,7 @@ export function zuluToIso(date) {
 export async function checkCache(cache, etype) {
   return $.ajax({
     method: "GET",
+    xhrFields: { withCredentials: true },
     url: restUrl + etype + "/metadata",
     data: "lastSync=" + zuluToIso(cache[etype].modTime),
   }).done(function(data, textStatus, jqXHR) {
@@ -62,6 +63,7 @@ async function queryAndCollectResource(url, key, dataHandler) {
   let promise;
   await $.ajax({
     method: "GET",
+    xhrFields: { withCredentials: true },
     url: url
   }).done(function(data, textStatus, jqXHR) {
     if(data == null) {

@@ -1,12 +1,13 @@
 import React from "react";
-import $ from "jquery";
-import { toast } from "react-toastify";
+// import $ from "jquery";
+// import { toast } from "react-toastify";
 import classNames from "classnames";
 import PropTypes from "prop-types";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
 
+import { postRequest, } from "../Utils";
 import { restUrl } from "../App";
 import { toastMessage } from "../AjaxResponse";
 import "./styles.css";
@@ -255,10 +256,7 @@ export function add(itemName, suggName) {
   let params = {};
   if(suggName)
     params.name = suggName;
-  return $.ajax({method: "POST", data: params, url: url})
-  .done((data, textStatus, jqXHR) => {
-    toast.success("Added", { position: "bottom-right" });
-  })
+  return postRequest(url, params, null, "Added")
   .fail((jqXHR, textStatus, errorThrown) => {
     toastMessage(jqXHR);
   });
@@ -295,10 +293,7 @@ export function multiDelete(selectedItemsGetter, itemName, entityRemover) {
   items.forEach(item => {
     let url = restUrl + itemName + "/delete/" + item.id;
     entityRemover({type: itemName, id: item.id});
-    promises.push($.ajax({method: "POST", url: url})
-    .done((data, textStatus, jqXHR) => {
-      toast.success("Deleted", { position: "bottom-right" });
-    })
+    promises.push(postRequest(url, null, null, "Deleted")
     .fail((jqXHR, textStatus, errorThrown) => {
       toastMessage(jqXHR);
     }));

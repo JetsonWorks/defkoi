@@ -261,6 +261,16 @@ export function getFromCache(entities, cache) {
   return null;
 }
 
+var refreshDaemonStarted = false;
+export const startRefreshDaemon = createAsyncThunk(
+  'cache/startRefreshDaemon',
+  async(params, thunkAPI) => {
+    if(refreshDaemonStarted) return;
+    refreshDaemonStarted = new Date().toISOString();
+    thunkAPI.dispatch(refreshDaemon());
+  }
+);
+
 export const refreshDaemon = createAsyncThunk(
   'cache/refreshDaemon',
   async(params, thunkAPI) => {

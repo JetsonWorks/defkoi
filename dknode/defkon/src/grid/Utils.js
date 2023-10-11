@@ -12,6 +12,7 @@ export function entityPatcher(itemName, data, formKey, value) {
   let promise = $.ajax({
     method: "POST",
     url: url,
+    xhrFields: { withCredentials: true },
     data: params
   });
   toast.promise(promise, {

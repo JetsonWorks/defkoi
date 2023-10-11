@@ -62,6 +62,29 @@ export const getDeviceApis = createAsyncThunk(
   }
 );
 
+var statsDaemonStarted = false;
+export const startStatsDaemon = createAsyncThunk(
+  'cache/startStatsDaemon',
+  async(params, thunkAPI) => {
+    if(statsDaemonStarted) return;
+    statsDaemonStarted = new Date().toISOString();
+    thunkAPI.dispatch(statsDaemon());
+  }
+);
+
+let activeStatsDaemonPeriod = 5; // seconds
+let idleStatsDaemonPeriod = 10; // when lost communication
+let statsDaemonPeriod = activeStatsDaemonPeriod;
+export const statsDaemon = createAsyncThunk(
+  'cache/statsDaemon',
+  async(params, thunkAPI) => {
+    thunkAPI.dispatch(getStats());
+    thunkAPI.dispatch(getConfig());
+    setTimeout(() => thunkAPI.dispatch(statsDaemon()), statsDaemonPeriod * 1000);
+    statsDaemonPeriod = idleStatsDaemonPeriod;
+  }
+);
+
 export const getStats = createAsyncThunk(
   'md/getStats',
   async(params, thunkAPI) => {
@@ -122,19 +145,6 @@ export const selectChosenRestUrl = (state) => state.metadata.chosenRestUrl;
 export const selectDeviceApis = (state) => state.metadata.deviceApis;
 export const selectStats = (state) => state.metadata.stats;
 export const selectAvailableResolutions = (state) => state.metadata.availableResolutions;
-
-let activeStatsDaemonPeriod = 1; // seconds
-let idleStatsDaemonPeriod = 10; // when lost communication
-let statsDaemonPeriod = activeStatsDaemonPeriod;
-export const statsDaemon = createAsyncThunk(
-  'cache/statsDaemon',
-  async(params, thunkAPI) => {
-    thunkAPI.dispatch(getStats());
-    thunkAPI.dispatch(getConfig());
-    setTimeout(() => thunkAPI.dispatch(statsDaemon()), statsDaemonPeriod * 1000);
-    statsDaemonPeriod = idleStatsDaemonPeriod;
-  }
-);
 
 export const MdSlice = createSlice({
   name: 'md',

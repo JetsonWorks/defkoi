@@ -26,6 +26,7 @@ export function savePrefs(prefs) {
   return $.ajax({
     type: "PATCH",
     url: prefsUrl,
+    xhrFields: { withCredentials: true },
     data: JSON.stringify(prefs),
     success: function() {
       toast.success("Saved preferences", { position: "bottom-right", autoClose: 1000, transition: Flip, });

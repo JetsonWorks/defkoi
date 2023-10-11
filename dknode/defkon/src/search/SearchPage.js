@@ -53,9 +53,10 @@ export default function SearchPage(props) {
     if(typeof props.addSearchParams === "function")
       props.addSearchParams(params);
     let promise = $.ajax({
-        method: "GET",
-        url: searchUrl,
-        data: params
+      method: "GET",
+      url: searchUrl,
+      xhrFields: {withCredentials: true},
+      data: params
     }).done(function(data, textStatus, jqXHR) {
       results = data;
       setResults(data);
@@ -167,9 +168,9 @@ export default function SearchPage(props) {
         <ul>
           <li onChange={onSearchControlChange}>
             <label>Filter by text:</label>
-            <input id="filterText" type="text" autoFocus defaultValue={filterText} onKeyPress={onSearchControlChange} />
-            <input id="filter" type="button" value="Search" onClick={search} />
-            <label />
+            <input id="filterText" type="text" autoFocus defaultValue={filterText} onKeyPress={onSearchControlChange}/>
+            <input id="filter" type="button" value="Search" onClick={search}/>
+            <label/>
             {renderAdditionalControls()}
           </li>
         </ul>
@@ -217,9 +218,9 @@ export default function SearchPage(props) {
         <h2 className="pageTitle">{props.title}</h2>
       )}
       <SearchAPI.Provider value={{
-          search:  search,
-          results: rowData,
-        }}>
+        search: search,
+        results: rowData,
+      }}>
         {renderFilter()}
         <div>
           {isReady() && props.children}

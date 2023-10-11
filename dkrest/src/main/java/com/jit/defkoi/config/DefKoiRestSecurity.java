@@ -32,7 +32,7 @@ public class DefKoiRestSecurity extends KeycloakWebSecurityConfigurerAdapter {
     super.configure(http);
     // @formatter:off
     http.antMatcher("/**").authorizeRequests()
-      .antMatchers("/error**", "/data/**", "/files/**").permitAll()
+      .antMatchers("/error**").permitAll()
     ;
     // @formatter:on
     configureCsrf(http);
@@ -46,7 +46,6 @@ public class DefKoiRestSecurity extends KeycloakWebSecurityConfigurerAdapter {
     // @formatter:off
     http.antMatcher("/**").authorizeRequests()
       .antMatchers("/").hasRole("DEFKOI_USER")
-      .antMatchers("/operator/**").hasRole("DEFKOI_OPERATOR")
       .anyRequest().authenticated()
     ;
     // @formatter:on
@@ -56,12 +55,11 @@ public class DefKoiRestSecurity extends KeycloakWebSecurityConfigurerAdapter {
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOriginPatterns(Arrays.asList("https://*.jit.com:[*]"));
-    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "OPTIONS"));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH"));
     configuration.setAllowedHeaders(
       Arrays.asList("Accept", "Accept-Encoding", "Accept-Language", "Access-Control-Allow-Credentials", "Authorization",
-        "Connection", "Cookie", "Content-Type", "DNT", "Host", "Origin", "Referer", "User-Agent", "X-XSRF-TOKEN",
+        "Connection", "Cookie", "Content-Type", "DNT", "Host", "Origin", "Referer", "User-Agent",
         "X-DKREST-XSRF", "X-Requested-With"));
-//    configuration.setAllowCredentials(true);
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;

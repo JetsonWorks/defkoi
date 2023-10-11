@@ -27,6 +27,7 @@ export default function Config(props) {
     return $.ajax({
       type: "PATCH",
       url: url,
+      xhrFields: { withCredentials: true },
       data: JSON.stringify(patch),
       success: function () {
         toast.success("Saved config", {position: "bottom-right"});

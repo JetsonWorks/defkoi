@@ -9,6 +9,7 @@ export function fetchPrefs() {
 function queryAndCollectResource(url) {
   return $.ajax({
     method: "GET",
+    xhrFields: { withCredentials: true },
     url: url
   }).done(function(data, textStatus, jqXHR) {
     if(data == null) {
