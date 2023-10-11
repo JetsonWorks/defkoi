@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class CsrfProperties {
 
   private String cookieName = "XSRF-TOKEN";
+  private String cookieDomain;
   private String cookiePath = "/";
   private String headerName = "X-XSRF-TOKEN";
 

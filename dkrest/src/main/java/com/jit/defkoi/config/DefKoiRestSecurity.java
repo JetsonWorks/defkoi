@@ -13,6 +13,11 @@ import org.springframework.security.web.authentication.session.RegisterSessionAu
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.util.StringUtils;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @KeycloakConfiguration
 @EnableAutoConfiguration
@@ -47,11 +52,29 @@ public class DefKoiRestSecurity extends KeycloakWebSecurityConfigurerAdapter {
     // @formatter:on
   }
 
+  @Bean
+  CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Arrays.asList("https://keycloak.jit.com:8443", "https://defkon.jit.com:8086"));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "OPTIONS"));
+    configuration.setAllowedHeaders(
+      Arrays.asList("Accept", "Accept-Encoding", "Accept-Language", "Access-Control-Allow-Credentials", "Authorization",
+        "Connection", "Cookie", "Content-Type", "DNT", "Host", "Origin", "Referer", "User-Agent", "X-XSRF-TOKEN",
+        "X-DKREST-XSRF", "X-Requested-With"));
+    configuration.setAllowCredentials(true);
+    configuration.setAllowedOriginPatterns(Arrays.asList("https://*.jit.com:[*]"));
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
+
   protected void configureCsrf(HttpSecurity http) throws Exception {
     CookieCsrfTokenRepository repo = CookieCsrfTokenRepository.withHttpOnlyFalse();
     repo.setCookieHttpOnly(false);
     if(StringUtils.hasLength(csrfProperties.getCookieName()))
       repo.setCookieName(csrfProperties.getCookieName());
+    if(StringUtils.hasLength(csrfProperties.getCookieDomain()))
+      repo.setCookieDomain(csrfProperties.getCookieDomain());
     if(StringUtils.hasLength(csrfProperties.getCookiePath()))
       repo.setCookiePath(csrfProperties.getCookiePath());
     if(StringUtils.hasLength(csrfProperties.getHeaderName()))
