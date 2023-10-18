@@ -1,0 +1,190 @@
+#!/bin/bash
+# based on https://github.com/deepjavalibrary/djl/issues/141 (original steps retained as comments)
+# build DJL JNI for aarch64
+
+# ensure JDK is the right version
+# we need at least version 9 to build the djl/examples
+# 19 is too high, and maybe so is 17, but no matter - using lowest JDK for maximum versatility
+javaMax=11
+ver=$(java -version |& egrep -o "\"[^\"]*\"")
+[[ $ver =~ ^\"$javaMax\. ]] || {
+  echo "JDK $javaMax recommended to build the DJL JNI"
+  exit 1
+}
+
+# cudaVer is used to download the right libtorch bundle
+# See https://pytorch.org/ for compatibility matrix
+# Note: Jetson Nano supports CUDA 10.2
+dpkg -l cuda-compiler* |grep -q 10.2 && insCudaVer=cu102
+dpkg -l cuda-compiler* |grep -q 11.3 && insCudaVer=cu113
+[ "$cudaVer" ] || {
+  [ "$insCudaVer" ] && cudaVer=$insCudaVer || {
+    echo "Cuda not detected, so using default cu102"
+    cudaVer=cu102
+  }
+}
+
+# Note: per https://pytorch.org/get-started/previous-versions/, CUDA 10 can be used with v1.12.1
+# Note: according to the nvidia.com link below, the 1.11.0 wheel requires JetPack 5
+pytorchBuild=${pytorchBuild:-1.10.0}
+
+arch=${arch:-$(arch)}
+
+# used to download the PyTorch wheel for the aarch64 libraries
+# https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-10-now-available/72048
+pytorchNativeVer=${pytorchNativeVer:-$pytorchBuild}
+
+# aarch64 pip wheel
+declare -A wheels
+wheels[1.8.0]=https://nvidia.box.com/shared/static/p57jwntv436lfrd78inwl7iml6p13fzh.whl
+wheels[1.9.0]=https://nvidia.box.com/shared/static/h1z9sw4bb1ybi0rm3tu8qdj8hs05ljbm.whl
+wheels[1.10.0]=https://nvidia.box.com/shared/static/fjtbno0vpo676a25cgvuqc1wty0fkkg6.whl
+# the wheel for the minor release is good for all patches
+[ "${wheels[$pytorchNativeVer]}" ] ||
+  pytorchNativeVer=$(echo $pytorchNativeVer |cut -f1-2 -d.).0
+wheel=torch-$pytorchNativeVer-cp36-cp36m-linux_aarch64.whl
+
+# the DJL PyTorch engine implementation
+# See matrix at https://github.com/deepjavalibrary/djl/blob/master/engines/pytorch/pytorch-engine/README.md
+declare -A djlTorchMaxCompat
+djlTorchMaxCompat[1.8.1]=v0.16.0
+djlTorchMaxCompat[1.9.0]=v0.14.0
+djlTorchMaxCompat[1.9.1]=v0.16.0
+djlTorchMaxCompat[1.10.0]=v0.16.0
+djlPytorchVer=${djlPytorchVer:-${djlTorchMaxCompat[$pytorchBuild]}}
+djlPytorchVerShort=$(echo $djlPytorchVer | cut -c2-)
+
+# the refspec (branch or tag) to check out from https://github.com/awslabs/djl.git
+djlRefspec=${djlRefspec:-$djlPytorchVer}
+patchDir=~/git/defkoi/patches
+
+packages=(gcc g++)
+packages+=(mpi-default-dev libopenblas-dev) # runtime
+[ $(dpkg -l ${packages[*]} |grep -c ii) -eq ${#packages[*]} ] || {
+  sudo apt update || exit 1
+  sudo apt install -y ${packages[*]}
+  echo
+}
+
+# prepare your arm linux machine & make sure you have NumPy, Cython installed & Python version >= 3.6.
+
+mkdir -p ~/Downloads ~/git
+# download the 1.5 wheel as latest DJL only supports 1.5 and not compatible with 1.4
+# we only need the aarch64 libraries from the wheel
+[ "$arch" == "aarch64" ] && {
+  cd ~/Downloads
+  [ -f $wheel ] ||
+    curl -Lo $wheel ${wheels[$pytorchNativeVer]} || exit 1
+  rm -fr torch || exit 1
+  unzip $wheel torch/lib/* || exit 1
+}
+
+# pip3 install the wheel you download.
+
+# find the python pytorch library path. I did it by import torch && torch.file
+
+# copy header files & shared object files we are going to link against to libtorch
+# NAH, the C++ zip we download later has more header files
+# (reordered)
+
+# we directly use find_package(Torch REQUIRED) in our CMakeLists.txt so we should include all the *.cmake configs. You can get it by PyTorch C++
+# https://pytorch.org/
+cd ~/Downloads
+libtorch=libtorch-cxx11-abi-shared-with-deps-$pytorchBuild+$cudaVer.zip
+[ -f $libtorch ] ||
+  curl -Lo $libtorch "https://download.pytorch.org/libtorch/$cudaVer/$(echo $libtorch |sed 's/\+/%2B/')"
+rm -fr libtorch || exit 1
+unzip $libtorch libtorch/include/* libtorch/share/* || exit 1
+[ "$arch" == "x86_64" ] &&
+  unzip $libtorch libtorch/lib/*
+# we copy the whole share later, so don't bother copying share/cmake now
+
+cd ~/git
+[ -d djl ] ||
+  git clone https://github.com/awslabs/djl.git
+cd djl
+find . -type d -name build -exec rm -fr {} \;
+git fetch --tags
+git checkout -f $djlRefspec || exit 1
+[ $(find $patchDir -name "*.patch" |wc -l) -gt 0 ] && {
+  echo "Applying patches $patchDir/*.patch"
+  git apply < $patchDir/*.patch
+}
+cd engines/pytorch/pytorch-native
+mkdir -p libtorch
+cd libtorch
+
+# copy header files & shared object files we are going to link against to libtorch
+echo -e "\nCopying headers, libraries, and cmake files from pytorch wheel and zip into $PWD"
+cp -r ~/Downloads/libtorch/include .
+[ "$arch" == "aarch64" ] &&
+  cp -r ~/Downloads/torch/lib . ||
+  cp -r ~/Downloads/libtorch/lib .
+
+# unzip the PyTorch C++ and copy the share to libtorch as well
+cp -r ~/Downloads/libtorch/share .
+
+# Make sure you have lib include share in the libtorch folder
+
+cd ..
+mkdir -p build
+cd build
+
+# create the folder for the java header
+mkdir -p classes
+
+# generate the java header
+echo -e "\nBuilding PyTorchLibrary header include/ai_djl_pytorch_jni_PyTorchLibrary.h"
+javac -sourcepath ../../pytorch-engine/src/main/java/ ../../pytorch-engine/src/main/java/ai/djl/pytorch/jni/PyTorchLibrary.java -h include -d classes
+echo -e "\nBuilding JNI"
+cmake -DCMAKE_PREFIX_PATH=libtorch ..
+cmake --build . --config Release -- -j$(nproc) || exit 1
+
+build=$PWD
+installJni() {
+  cd $build
+  # you will find the libdjl_torch.so in build folder
+  jnilib=$PWD/libdjl_torch.so
+  chmod a-x $jnilib
+
+  # place libdjl_torch.so & all the shared objects in lib to the default pytorch engine folder (~/.pytorch/.pytorch/cache/1.5.0cpu-linux-x86_64) then you should be able to use it. You can also place those somewhere else and set ENGINE_CACHE_DIR to load it
+  echo -e "\nCopying libraries under ENGINE_CACHE_DIR and deleting any libraries for other architectures"
+  ENGINE_CACHE_DIR=~/.djl.ai
+  lib=$ENGINE_CACHE_DIR/pytorch/$djlPytorchVerShort-$cudaVer-linux-$arch
+  mkdir -p $lib
+  rm -v $lib/*libdjl_torch.so
+  cp -pv libdjl_torch.so $lib/$djlPytorchVerShort-libdjl_torch.so
+  cp -pv ../libtorch/lib/*.so $lib
+  for f in $lib/*.so; do
+    file $f |grep $arch || rm -v $f
+  done
+
+  echo -e "\nCopying $jnilib under ~/git/djl/.../jnilib/linux-$arch/$cudaVer"
+  cd ~/git/djl
+  jnilibs="
+    engines/dlr/dlr-engine/build/jnilib
+    engines/dlr/dlr-engine/build/classes/java/main/jnilib
+    engines/pytorch/pytorch-engine/build/classes/java/main/jnilib
+    extensions/sentencepiece/build/jnilib
+    extensions/fasttext/build/jnilib
+    examples/target/classes/jnilib
+  "
+  for d in $jnilibs ; do
+    f=$d/linux-$arch/$cudaVer/libdjl_torch.so
+    mkdir -p $(dirname $f)
+    cp -v $jnilib $f
+  done
+}
+
+installJni
+
+echo
+read -ep "Run the DJL example tests? [Y/n]: " answer
+[[ "$answer" == "n" || "$answer" == "N" ]] || {
+  [ -f engines/pytorch/pytorch-engine/build/classes/java/main/jnilib/pytorch.properties ] || {
+    ./gradlew build -x test
+  }
+
+  cd examples
+  ./gradlew -Dai.djl.default_engine=PyTorch test --debug
+}

@@ -1,0 +1,9 @@
+#!/bin/bash
+# convert the pipeline dump DOTs into PNGs
+
+command -v dot >/dev/null || {
+  echo "Install package graphviz" >&2
+  exit 1
+}
+mkdir -p debug
+find /tmp -maxdepth 1 -name "*.dot" -exec bash -c "dot -Tpng \"{}\" > debug/\"\$(basename \"{}\" |sed \"s/dot/png/\")\" && rm \"{}\"" \;

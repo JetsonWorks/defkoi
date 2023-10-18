@@ -1,0 +1,41 @@
+.reactTabs {
+}
+
+.reactTabs-tabs{
+}
+
+.reactTabs-tabList {
+  border-bottom: 1px solid #aaa;
+  margin: 0 0 10px;
+  padding: 0;
+}
+
+.reactTabs-tab {
+  display: inline-block;
+  border: 1px solid transparent;
+  border-bottom: none;
+  bottom: -1px;
+  position: relative;
+  list-style: none;
+  padding: 0 6px;
+  cursor: pointer;
+}
+
+.reactTabs-tabSelected {
+  background: #eee;
+  border-color: #aaa;
+  color: #90B13E;
+  border-radius: 5px 5px 0 0;
+}
+
+.reactTabs-tabDisabled {
+}
+
+.reactTabs-tabPanel {
+  display: none;
+}
+
+.reactTabs-tabPanelSelected {
+  display: block;
+}
+

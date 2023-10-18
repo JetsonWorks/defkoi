@@ -1,0 +1,6 @@
+#!/bin/bash
+# create and run an optimized production build
+
+npm run build
+/opt/bin/serve -s build -p 8086 -d --ssl-cert cert.pem --ssl-key key.pem
+

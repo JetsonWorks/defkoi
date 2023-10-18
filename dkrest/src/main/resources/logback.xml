@@ -1,0 +1,87 @@
+<configuration scan="true" scanPeriod="10 seconds">
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%d{ISO8601} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="main" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/app/defkoi/log/dkrest.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>/app/defkoi/log/dkrest.log.%d{yyyy-MM-dd}</FileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="detection" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/app/defkoi/log/detection.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>/app/defkoi/log/detection.log.%d{yyyy-MM-dd}</FileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="org.springframework" additivity="false" level="info">
+        <appender-ref ref="console"/>
+        <appender-ref ref="main"/>
+    </logger>
+
+    <logger name="org.springframework.security" additivity="false" level="info">
+        <appender-ref ref="console"/>
+        <appender-ref ref="main"/>
+    </logger>
+
+    <logger name="org.apache.commons.beanutils" additivity="false" level="info">
+        <appender-ref ref="console"/>
+        <appender-ref ref="main"/>
+    </logger>
+
+    <logger name="com.jit.defkoi" additivity="false" level="info">
+        <appender-ref ref="console"/>
+        <appender-ref ref="main"/>
+    </logger>
+
+    <logger name="com.jit.defkoi.pipeline" additivity="false" level="info">
+        <appender-ref ref="console"/>
+        <appender-ref ref="main"/>
+    </logger>
+
+    <logger name="com.jit.defkoi.pipeline.MotionConversion" additivity="false" level="debug">
+        <appender-ref ref="console"/>
+        <appender-ref ref="detection"/>
+    </logger>
+
+    <logger name="com.jit.defkoi.pipeline.MotionDetection" additivity="false" level="debug">
+        <appender-ref ref="console"/>
+        <appender-ref ref="detection"/>
+    </logger>
+
+    <logger name="com.jit.defkoi.pipeline.ObjectConversion" additivity="false" level="debug">
+        <appender-ref ref="console"/>
+        <appender-ref ref="detection"/>
+    </logger>
+
+    <logger name="com.jit.defkoi.pipeline.ObjectDetection" additivity="false" level="debug">
+        <appender-ref ref="console"/>
+        <appender-ref ref="detection"/>
+    </logger>
+
+    <logger name="com.jit.defkoi.pipeline.ObjectPublisher" additivity="false" level="debug">
+        <appender-ref ref="console"/>
+        <appender-ref ref="main"/>
+    </logger>
+
+    <root level="info">
+        <appender-ref ref="console"/>
+        <appender-ref ref="main"/>
+    </root>
+</configuration>
+
+        <!-- vim:noet
+        -->

@@ -1,0 +1,21 @@
+#!/bin/bash
+# run the app on the Jetson or amd64
+
+cd $(dirname $0)
+export GST_DEBUG_DUMP_DOT_DIR=/tmp
+export ENGINE_CACHE_DIR=$HOME/.djl.ai
+# override of version specified in resources/native/lib/pytorch.properties
+#export PYTORCH_VERSION=0.16.0
+export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libgomp.so.1
+
+export SPRING_PROFILES_ACTIVE=native
+pushd dkrest
+if arch |grep -q x86_64 ; then
+  mvn -Pmxnet spring-boot:run
+else
+  mvn -Ppytorch spring-boot:run
+fi
+popd
+
+nice -n 10 ./pngPipeline &
+
