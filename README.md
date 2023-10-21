@@ -104,7 +104,7 @@ These URLs will be displayed in the log.
 The streams can be opened with software such as VLC on supported devices.
 Refer to the [MediaMTX](https://github.com/bluenviron/mediamtx) page for more information.
 
-[![publish2](docs/th_structurizr-1-DefKoi-Dockerizeddk-docker.png)](docs/structurizr-1-DefKoi-Dockerizeddk-docker.png)
+[![publish2](docs/th_structurizr-1-DefKoidk-docker.png)](docs/structurizr-1-DefKoidk-docker.png)
 
 ## Further Configuration
 
