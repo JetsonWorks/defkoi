@@ -136,7 +136,7 @@ public class CameraPipeline extends SentryPipeline {
           .link(Pipe.lay(pipeline, "queue", "liveRtspQueue").set("max-size-buffers", config.getQueueMaxSize()))
           .link(Pipe.convert(pipeline, "liveRtspConvert").nv(config.isNvCapable() && pipeConf.getNvEnabled()))
           .link(Pipe.lay(pipeline, "rtspclientsink", "liveRtsp")
-            .set("location", url).set("protocols", RtspProtocol.bitOr(RtspProtocol.udp, RtspProtocol.tcp)));
+            .set("location", url).set("protocols", RtspProtocol.bitOr(RtspProtocol.tcp)));
       }
       //@formatter:on
 

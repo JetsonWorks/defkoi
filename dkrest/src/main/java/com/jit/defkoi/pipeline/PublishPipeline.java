@@ -51,7 +51,7 @@ public class PublishPipeline extends SentryPipeline {
       tee
         .link(Pipe.lay(pipeline, "queue", "objectRtspQueue").set("max-size-buffers", config.getQueueMaxSize()))
         .link(Pipe.lay(pipeline, "rtspclientsink", "objectRtsp")
-          .set("location", url).set("protocols", RtspProtocol.bitOr(RtspProtocol.udp, RtspProtocol.tcp)));
+          .set("location", url).set("protocols", RtspProtocol.bitOr(RtspProtocol.tcp)));
       //@formatter:on
 
       pipeline.getBus().connect((Bus.EOS)this::endOfStream);

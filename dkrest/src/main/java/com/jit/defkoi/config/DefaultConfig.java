@@ -33,7 +33,7 @@ public class DefaultConfig {
   private Integer statsUpdatePeriod;
   @Value("#{1}")
   private Integer queueMaxSize;
-  @Value("#{'rtsp://rtspProxy:8554/'}")
+  @Value("#{'rtsp://defkon.jit.com:8554/'}")
   private String rtspProxyUrl;
 
   @Bean
