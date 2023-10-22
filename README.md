@@ -38,7 +38,7 @@ Docker Compose is needed for the front-end services.
 If not already installed, please follow the instructions in [this guide](https://docs.docker.com/compose/install/).
 
 # Usage
-This project has been packaged for quick setup by following these steps.
+Follow these steps for quick setup.
 
 ## Installation
 
@@ -77,11 +77,9 @@ This creates a user named "dkuser" with password "dkuser", and belonging to the 
 1. Update /etc/hosts
    1. Associate your PC's IP address with defkon.jit.com
    1. Associate your Jetson's IP address with defkoi.jit.com
-1. If you have already run the [video](https://github.com/JetsonWorks/video) project on this device, 
-edit /var/media/mediamtx.yml to comment out all paths using /dev/video* devices
 1. Edit docker-compose.yaml to add all your /dev/video* devices to the dkrest service
 1. Start the services
-    1. ```docker compose --profile defkoi up```
+   1. ```docker compose --profile defkoi up```
 
 ## Operation
 Once the dkrest application has started on your Jetson, you may access it using [DefKon](https://defkon.jit.com:8086/).
@@ -93,16 +91,23 @@ Once the dkrest application has started on your Jetson, you may access it using 
 1. Changes are saved, but not activated until you hit the ![activate](dknode/defkon/src/media/mystica-Arrow-set-with-deep-1.png) button
 1. If needed, you can hit the ![reinit](dknode/defkon/src/media/0000_Refresh.png) button to probe video devices and reinitialize pipelines, but this should not normally be necessary
 
+[![publish2](docs/th_Screenshot_20231021_074014.png)](docs/Screenshot_20231021_074014.png)
+
 ### Proxying
-Before you can publish live streams to the RTSP proxy, you must update the configuration.
-When the rtspproxy service started, it saved the default mediamtx.yml in /var/media.
-1. Update the configuration to disable any paths that would use the same video devices being used by DefKoi
-1. Define a "live" path for each camera you wish to stream
-   1. Each URL ends with the display name of the camera, which is displayed on the Devices tab in DefKon
-   1. Remove the spaces from the camera name
-      1. For example: the URL for "HD USB Camera" is rtsp://rtspproxy:8554/live/HDUSBCamera
+When publishing to RTSP is enabled, the RTSP proxy must be accessible when the video processing pipeline is initialized.
+The default proxy is MediaMTX, running on the front-end server.
+If you choose to provide an alternate proxy, update the base URL in the configuration.
+
+The path of the stream is constructed from the type of stream and the name of the video device, after removing spaces.
+For example, if name of a video device is "HD USB Camera", the live stream URL would be rtsp://defkon.jit.com:8554/live/HDUSBCamera.
+These URLs will be displayed in the log.
+The streams can be opened with software such as VLC on supported devices.
+Refer to the [MediaMTX](https://github.com/bluenviron/mediamtx) page for more information.
+
+[![publish2](docs/th_structurizr-1-DefKoidk-docker.png)](docs/structurizr-1-DefKoidk-docker.png)
 
 ## Further Configuration
+
 ### Replacing the Sample Domain and Certificate
 I recommend using a certificate from [Let's Encrypt](https://letsencrypt.org) with subject alternative names.
 You can model your cert after the sample cert for defkoi.jit.com, with SANs for defkon.jit.com and keycloak.jit.com.
@@ -138,6 +143,7 @@ Follow the prompts, and this script will update docker-compose.yaml and .env acc
 
 ### Running dkrest Natively on the Jetson
 
+DefKoi runs better natively (see the memory leak issue below).
 The ```prepare/dev.sh``` script can help you configure your Jetson for running dkrest natively by:
 
 1. Installing the remaining dependencies
@@ -164,9 +170,9 @@ When the app terminates, the pngPipeline script will convert these DOTs into PNG
 
 The object detection functionality is leaking memory.
 Memory leaks like this have been widely reported on the developer forum.
-See also: [JetPack 4 Reaches End of Life](https://forums.developer.nvidia.com/t/jetpack-4-reaches-end-of-life/267563).
-
 The effects of the leak are mitigated by reducing the max resolution for object detection and running dkrest natively.
+
+See also: [JetPack 4 Reaches End of Life](https://forums.developer.nvidia.com/t/jetpack-4-reaches-end-of-life/267563).
 
 # Planned Features
 
@@ -183,6 +189,5 @@ The effects of the leak are mitigated by reducing the max resolution for object 
 * Finish the detected object RTSP stream
 * Spatial awareness
 * Support for other inference engines
-* MediaMTX auto-configuration
 * RTSP feeds in browser
 

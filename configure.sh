@@ -44,7 +44,7 @@ else
     cp dkrest/src/main/resources/application.properties /app/defkoi/dkrest.properties
   [ -f /app/defkoi/logback-rest.xml ] ||
     cp dkrest/src/main/resources/logback.xml /app/defkoi/logback-rest.xml
-  echo -e "\nVerify settings in /app/defkoi/dkrest-native.properties"
+  echo -e "\nVerify settings in /app/defkoi/dkrest.properties"
 fi
 
 echo -e "\nPlease verify settings in the .env file."

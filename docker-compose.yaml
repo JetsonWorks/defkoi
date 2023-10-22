@@ -5,8 +5,6 @@ volumes:
 networks:
   secnet:
     driver: bridge
-  dknet:
-    driver: bridge
 
 services:
 
@@ -101,6 +99,13 @@ services:
         failure_action: rollback
         monitor: 5s
 
+  # default RTSP proxy for live streams
+  mediamtx:
+    image: bluenviron/mediamtx
+    profiles:
+      - defkon
+    network_mode: host
+
   dkdb:
     image: bitnami/postgresql:15.4.0
     profiles:
@@ -118,8 +123,6 @@ services:
       ownerPassword: ${ownerPassword}
     ports:
       - "5432:5432"
-    networks:
-      - dknet
     deploy:
       resources:
         limits:
@@ -143,7 +146,6 @@ services:
         inferenceImg: ${inferenceImg}
     depends_on:
       - dkdb
-      - rtspproxy
     environment:
       # set SPRING_CONFIG_LOCATION or set SPRING_CLOUD_CONFIG_URI or leave both commented out for default app props
 #      SPRING_CONFIG_LOCATION: /app/defkoi/dkrest.properties
@@ -153,8 +155,6 @@ services:
       SPRING_CLOUD_CONFIG_PASSWORD: ${SPRING_CLOUD_CONFIG_PASSWORD}
     ports:
       - "8085:8085"
-    networks:
-      - dknet
     volumes:
       # Note: this mount is not needed for default application properties
       # Note: this mount is also not needed if using Spring Config Service
@@ -179,22 +179,4 @@ services:
       - "/dev/video0:/dev/video0"
       # Add your video devices here
 #      - "/dev/video1:/dev/video1"
-
-  # default RTSP proxy for live streams (be sure to update mediamtx.yml)
-  rtspproxy:
-    image: ${project}rtspproxy${videoTag}
-    profiles:
-      - defkoi
-    environment:
-      mediaMnt: $mediaMnt
-    volumes:
-      - type: bind
-        source: $mediaDir
-        target: $mediaMnt
-    ports:
-      - "8554:8554"
-      - "8555:8555"
-      - "8000-8099:8000-8099/udp"
-    networks:
-      - dknet
 
