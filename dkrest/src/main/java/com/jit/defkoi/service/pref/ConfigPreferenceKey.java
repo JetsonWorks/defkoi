@@ -19,6 +19,18 @@ public enum ConfigPreferenceKey implements IPrefKey {
     }
   },
 
+  dockerized {
+    @Override
+    public String getName() {
+      return name();
+    }
+
+    @Override
+    public PrefDataType getDataType() {
+      return PrefDataType.BOOLEAN;
+    }
+  },
+
   mediaDir {
     @Override
     public String getName() {

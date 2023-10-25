@@ -4,25 +4,25 @@
 
     <artifactId>dkrest</artifactId>
     <name>dkrest</name>
-    <version>0.3</version>
+    <version>0.4</version>
     <packaging>jar</packaging>
     <description>Sentry app</description>
 
     <parent>
         <groupId>com.jit</groupId>
         <artifactId>defkoi</artifactId>
-        <version>0.3</version>
+        <version>0.4</version>
     </parent>
 
     <properties>
         <java.version>13</java.version>
         <maven.compiler.source>13</maven.compiler.source>
         <maven.compiler.target>13</maven.compiler.target>
-        <djl.version>0.16.0</djl.version>
+        <djl.version>0.23.0</djl.version>
         <jna.version>5.11.0</jna.version>
         <gst1.version>1.4.0</gst1.version>
         <mxnet.version>1.8.0</mxnet.version>
-        <pytorch.version>1.10.0</pytorch.version>
+        <pytorch.version>1.12.1</pytorch.version>
         <tensorflow.version>2.4.1</tensorflow.version>
         <spring.version>2.7.0</spring.version>
         <spring.security.version>5.7.1</spring.security.version>

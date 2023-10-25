@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# PyTorch requires cmake version >= 3.13.0
+# cmake requires openssl dev package or root folder (git repo seems to work)
+
+set -e
+enableDistcc=1
+
+echo -e "\nChecking system packages"
+packages=(g++-8 mpi-default-dev libopenblas-dev python3.8-dev python3-pip)
+[ $enableDistcc -eq 1 ] &&
+  packages+=(distcc ccache) || true
+num=$(dpkg -l ${packages[*]} |grep ^ii |wc -l)
+[ $num -ge ${#packages[*]} ] || {
+  echo -e "\tInstalling some packages"
+  sudo apt install -y ${packages[*]}
+}
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 38
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 3
+sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 3
+
+# set up build tools in /etc/alternatives
+echo -e "\nChecking build tool alternatives"
+output=$(ls -la /etc/alternatives/{cpp,g++,gcc,gcc-ar,gcc-nm,gcc-ranlib,gcov,gcov-dump,gcov-tool}) || missing=1
+[ -v missing ] || echo "$output" |grep "7$" && {
+  echo -e "\tUpdating some alternatives"
+  sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-7 700
+  sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-8 800
+  sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 700 --slave /usr/bin/g++ g++ /usr/bin/g++-7
+  sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8
+  sudo update-alternatives --install /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-7 700
+  sudo update-alternatives --install /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-8 800
+  sudo update-alternatives --install /usr/bin/gcc-nm gcc-nm /usr/bin/gcc-nm-7 700
+  sudo update-alternatives --install /usr/bin/gcc-nm gcc-nm /usr/bin/gcc-nm-8 800
+  sudo update-alternatives --install /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-7 700
+  sudo update-alternatives --install /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-8 800
+  sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-7 700
+  sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-8 800
+  sudo update-alternatives --install /usr/bin/gcov-dump gcov-dump /usr/bin/gcov-dump-7 700
+  sudo update-alternatives --install /usr/bin/gcov-dump gcov-dump /usr/bin/gcov-dump-8 800
+  sudo update-alternatives --install /usr/bin/gcov-tool gcov-tool /usr/bin/gcov-tool-7 700
+  sudo update-alternatives --install /usr/bin/gcov-tool gcov-tool /usr/bin/gcov-tool-8 800
+}
+
+if [ $enableDistcc -eq 1 ]; then
+  echo -e "\nChecking distcc configuration"
+  # distcc 3.1 doesn't pass the correct compiler name to the helper box, resulting in the native compiler being used
+  # we can compensate with some links and a wrapper
+  cd /usr/lib/ccache
+  chost=aarch64-linux-gnu
+  [ -f $chost-wrapper ] || {
+    echo -e "\tSetting up wrapper script for ccache/distcc to select the correct architecture on helper boxes"
+    sudo tee -a $chost-wrapper <<-"EOF"
+	#!/bin/bash
+	comp=$(basename $0)
+	if [ "$comp" == "cc" ]; then
+		comp=gcc
+	elif [ "$comp" == "c++" ]; then
+		comp=g++
+	fi
+  shift
+	exec /usr/lib/ccache/aarch64-linux-gnu-$comp "$@"
+	EOF
+    sudo chmod +x $chost-wrapper
+    for comp in cc gcc gcc-7 gcc-8 g++ c++ g++-7 g++-8; do
+      sudo ln -nsf $chost-wrapper $comp
+    done
+  }
+  [[ "$CCACHE_PREFIX" && "$DISTCC_HOSTS" ]] ||
+    echo -e "\nccache and distcc are installed, but to utilize, don't forget to export CCACHE_PREFIX=distcc and DISTCC_HOSTS\n"
+fi
+

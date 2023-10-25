@@ -5,7 +5,7 @@
     <groupId>com.jit</groupId>
     <artifactId>defkoi</artifactId>
     <name>defkoi</name>
-    <version>0.3</version>
+    <version>0.4</version>
     <packaging>pom</packaging>
     <description>Defender of the koi pond</description>
 

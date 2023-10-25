@@ -158,6 +158,16 @@ public class Config extends CommonPreferences {
     setPreference(debug, value);
   }
 
+  @JsonProperty("dockerized")
+  public boolean isDockerized() {
+    return Boolean.TRUE.equals(getPreference(dockerized).getBooleanData());
+  }
+
+  @JsonProperty("dockerized")
+  public void setDockerized(boolean value) {
+    setPreference(dockerized, value);
+  }
+
   @JsonProperty("mediaDir")
   public String getMediaDir() {
     return getPreference(mediaDir).getStringData();

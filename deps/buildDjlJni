@@ -26,7 +26,9 @@ dpkg -l cuda-compiler* |grep -q 11.3 && insCudaVer=cu113
 
 # Note: per https://pytorch.org/get-started/previous-versions/, CUDA 10 can be used with v1.12.1
 # Note: according to the nvidia.com link below, the 1.11.0 wheel requires JetPack 5
-pytorchBuild=${pytorchBuild:-1.10.0}
+#pytorchBuild=${pytorchBuild:-1.10.0}
+#pytorchBuild=${pytorchBuild:-1.11.0} # DJL v0.23.0 fails to compile against PyTorch 1.11.0
+pytorchBuild=${pytorchBuild:-1.12.1}
 
 arch=${arch:-$(arch)}
 
@@ -39,6 +41,9 @@ declare -A wheels
 wheels[1.8.0]=https://nvidia.box.com/shared/static/p57jwntv436lfrd78inwl7iml6p13fzh.whl
 wheels[1.9.0]=https://nvidia.box.com/shared/static/h1z9sw4bb1ybi0rm3tu8qdj8hs05ljbm.whl
 wheels[1.10.0]=https://nvidia.box.com/shared/static/fjtbno0vpo676a25cgvuqc1wty0fkkg6.whl
+wheels[1.11.0]=https://nvidia.box.com/shared/static/ssf2v7pf5i245fk4i0q926hy4imzs2ph.whl # requires Python 3.8
+wheels[1.12.0]=https://developer.download.nvidia.com/compute/redist/jp/v50/pytorch/torch-1.12.0a0+2c916ef.nv22.3-cp38-cp38-linux_aarch64.whl # requires Python 3.8
+wheels[1.12.1]=https://notavailable
 # the wheel for the minor release is good for all patches
 [ "${wheels[$pytorchNativeVer]}" ] ||
   pytorchNativeVer=$(echo $pytorchNativeVer |cut -f1-2 -d.).0
@@ -51,6 +56,9 @@ djlTorchMaxCompat[1.8.1]=v0.16.0
 djlTorchMaxCompat[1.9.0]=v0.14.0
 djlTorchMaxCompat[1.9.1]=v0.16.0
 djlTorchMaxCompat[1.10.0]=v0.16.0
+#djlTorchMaxCompat[1.10.0]=v0.19.0 # v0.17.0, v0.18.0, and v0.19.0 fail to compile against PyTorch 1.10.0
+djlTorchMaxCompat[1.11.0]=v0.23.0
+djlTorchMaxCompat[1.12.1]=v0.23.0
 djlPytorchVer=${djlPytorchVer:-${djlTorchMaxCompat[$pytorchBuild]}}
 djlPytorchVerShort=$(echo $djlPytorchVer | cut -c2-)
 

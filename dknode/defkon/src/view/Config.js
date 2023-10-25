@@ -82,6 +82,8 @@ export default function Config(props) {
               <ul className="vertical">
                 <Toggle label="Debug" selectId="debug" className="green" disabled={!isOperator}
                         defaultValue={config.debug} value={patch.debug} onChange={toggle}/>
+                <Toggle label="Dockerized" selectId="dockerized" className="green" disabled={true}
+                        defaultValue={config.dockerized} value={patch.dockerized} onChange={toggle}/>
                 <Toggle label="NV-Capable" selectId="nvCapable" className="green" disabled={true}
                         defaultValue={config.nvCapable} value={patch.nvCapable} onChange={toggle}/>
                 <Text label="Media Output Directory" selectId="mediaDir" disabled={!isOperator}
@@ -107,7 +109,7 @@ export default function Config(props) {
               <ul className="vertical">
                 <SelectOption label="Max Capture Resolution" selectId="maxCaptureRes" objects={availRes} disabled={!isOperator}
                               value={config.maxCaptureRes} onChange={changeHandler}/>
-                <Toggle label="Tap Live Feed (xvimage)" selectId="tapLiveEnabled" className="green" disabled={!isOperator}
+                <Toggle label="Tap Live Feed (xvimage)" selectId="tapLiveEnabled" className="green" disabled={!isOperator || config.dockerized}
                         defaultValue={config.tapLiveEnabled} value={patch.tapLiveEnabled} onChange={toggle}/>
                 <Toggle label="Publish live feed to RTSP" selectId="liveRtspEnabled" className="green" disabled={!isOperator}
                         defaultValue={config.liveRtspEnabled} value={patch.liveRtspEnabled} onChange={toggle}/>

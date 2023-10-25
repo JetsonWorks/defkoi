@@ -5,6 +5,8 @@ volumes:
 networks:
   secnet:
     driver: bridge
+  dknet:
+    driver: bridge
 
 services:
 
@@ -123,6 +125,8 @@ services:
       ownerPassword: ${ownerPassword}
     ports:
       - "5432:5432"
+    networks:
+      - dknet
     deploy:
       resources:
         limits:
@@ -155,6 +159,8 @@ services:
       SPRING_CLOUD_CONFIG_PASSWORD: ${SPRING_CLOUD_CONFIG_PASSWORD}
     ports:
       - "8085:8085"
+    networks:
+      - dknet
     volumes:
       # Note: this mount is not needed for default application properties
       # Note: this mount is also not needed if using Spring Config Service

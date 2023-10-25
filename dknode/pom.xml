@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.jit</groupId>
         <artifactId>defkoi</artifactId>
-        <version>0.3</version>
+        <version>0.4</version>
     </parent>
 
     <build>

@@ -1,8 +1,8 @@
 #!/bin/bash
 # DefKoi development environment
 
-pytorchBuild=1.10.0
-djlBuild=0.16.0
+pytorchBuild=1.12.1
+djlBuild=0.23.0
 projdir=$(dirname $0)/..
 
 # install system packages
@@ -16,7 +16,7 @@ source "$HOME/.sdkman/bin/sdkman-init.sh"
 sdk install maven 3.8.8
 
 # extract DJL native libs
-[ -d /home/$user/.djl.ai/pytorch/$djlBuild-cu102-linux-aarch64 ] ||
+[ -d $HOME/.djl.ai/pytorch/$djlBuild-cu102-linux-aarch64 ] ||
   docker cp defkoi-dkrest-1:/root/.djl.ai $HOME/.djl.ai
 
 # add the CA to the trust store

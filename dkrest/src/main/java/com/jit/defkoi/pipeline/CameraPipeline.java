@@ -119,7 +119,7 @@ public class CameraPipeline extends SentryPipeline {
           context.createPublishPipeline();
       }
 
-      if(config.isTapLiveEnabled()) {
+      if(config.isTapLiveEnabled() && !config.isDockerized()) {
         //@formatter:off
         tee
           .link(Pipe.lay(pipeline, "queue", "liveQueue").set("max-size-buffers", config.getQueueMaxSize()))
@@ -131,12 +131,14 @@ public class CameraPipeline extends SentryPipeline {
       if(config.isLiveRtspEnabled()) {
         String url = String.format("%slive/%s", config.getRtspProxyUrl(), context.getRootName().replaceAll(" ", ""));
         logger.info("Publishing live feed to " + url);
+        int protos =
+          config.isDockerized() ? RtspProtocol.tcp.getBit() : RtspProtocol.bitOr(RtspProtocol.udp, RtspProtocol.tcp);
         //@formatter:off
         tee
           .link(Pipe.lay(pipeline, "queue", "liveRtspQueue").set("max-size-buffers", config.getQueueMaxSize()))
           .link(Pipe.convert(pipeline, "liveRtspConvert").nv(config.isNvCapable() && pipeConf.getNvEnabled()))
           .link(Pipe.lay(pipeline, "rtspclientsink", "liveRtsp")
-            .set("location", url).set("protocols", RtspProtocol.bitOr(RtspProtocol.tcp)));
+            .set("location", url).set("protocols", protos));
       }
       //@formatter:on
 
