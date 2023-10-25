@@ -95,6 +95,7 @@ public class Sentry {
     }
 
     config.setNvCapable(Utils.detectNvidiaGst());
+    config.setDockerized(Utils.detectDockerContainer());
     prefService.saveConfig(config);
     logger.info("Probing V4L2 devices");
     updateDevices(Utils.detectV4l2Devices(), DeviceApi.v4l2);

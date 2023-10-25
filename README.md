@@ -24,12 +24,12 @@ brings the power of the GStreamer library to Java, enabling pipelines for video 
   * Use the defkoi profile on the Jetson and the defkon profile on your PC
 * GPU-accelerated video processing from CSI sources via nvidia-l4t-gstreamer
 * Back-end and front-end services utilize HTTPS and OIDC for security
-* Publishing of camera feeds to the on-board (or an off-board) RTSP proxy
+* Publishing of camera feeds to the RTSP proxy
 
 ## Requirements
 
 * A Jetson Nano
-  * Or a similar SBC of your choice, compatible with PyTorch 1.10.0 on CUDA 10.2
+  * Or a similar SBC of your choice, compatible with PyTorch 1.12.1 on CUDA 10.2
 * 32 GB storage for OS and apps
 * 4 GB memory
 * Additional resources or a separate machine for the front-end services
@@ -44,7 +44,7 @@ Follow these steps for quick setup.
 
 1. After completing OEM setup, clone this Git repo and execute ```prepare/system.sh``` <b>as root</b>
    1. This will ensure your system packages are updated and then install DefKoi dependencies
-   1. When prompted, choose to: Install the package maintainer's version
+   1. When prompted, choose to install the package maintainer's version
    1. When prompted, choose to restart services automatically
    1. To conserve resources, I recommend setting the default runlevel to multi-user
 1. After rebooting, pull the Docker images
@@ -91,7 +91,14 @@ Once the dkrest application has started on your Jetson, you may access it using 
 1. Changes are saved, but not activated until you hit the ![activate](dknode/defkon/src/media/mystica-Arrow-set-with-deep-1.png) button
 1. If needed, you can hit the ![reinit](dknode/defkon/src/media/0000_Refresh.png) button to probe video devices and reinitialize pipelines, but this should not normally be necessary
 
+### Configuration
 [![publish2](docs/th_Screenshot_20231021_074014.png)](docs/Screenshot_20231021_074014.png)
+
+### Startup
+It takes a few seconds for PyTorch to initialize.
+Here we see one video device being activated and PyTorch initializing before starting object detection.
+
+[![startup-csi](docs/th_startup-csi.png)](docs/startup-csi.mp4)
 
 ### Proxying
 When publishing to RTSP is enabled, the RTSP proxy must be accessible when the video processing pipeline is initialized.
@@ -171,23 +178,20 @@ When the app terminates, the pngPipeline script will convert these DOTs into PNG
 The object detection functionality is leaking memory.
 Memory leaks like this have been widely reported on the developer forum.
 The effects of the leak are mitigated by reducing the max resolution for object detection and running dkrest natively.
+I compiled PyTorch 1.12.1 (Nvidia did not publish it for JetPack 4.6) and the PyTorch native library for DJL 0.23.0 (which are the maximum compatible versions), hoping that one of the memory leak fixes would resolve this issue.
 
 See also: [JetPack 4 Reaches End of Life](https://forums.developer.nvidia.com/t/jetpack-4-reaches-end-of-life/267563).
 
-# Planned Features
+## Limitations
+The "Tap live feed" option is disabled while running in Docker, as is RTSP streaming over UDP.
 
-* Motion detection, which can conditionally trigger object detection
+# Planned Features/Functionality
+
 * Multithreaded object detection, to take full advantage of the GPU
-* Support for JetPack 4.6.x (max for Jetson Nano)
-    * With custom-built libraries, maxing out the compatibility matrices
-        * PyTorch 1.12.1
-            * upgraded from 1.10.0
-            * not available from NVIDIA until JP 5
-        * DJL 0.23.0
-            * upgraded from 0.16.0
-* Support for other SBCs
+* Motion detection, which can conditionally trigger object detection
 * Finish the detected object RTSP stream
-* Spatial awareness
+* Support for other SBCs
 * Support for other inference engines
 * RTSP feeds in browser
+* Integration of other components and frameworks needed for project completion
 

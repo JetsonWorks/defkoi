@@ -1,0 +1,10 @@
+#!/bin/bash
+
+grep -q firefox /home/vagrant/.bashrc ||
+  cat >> /home/vagrant/.bashrc <<-EOF
+
+	[ -f /home/vagrant/Downloads/sdkmanager* ] || {
+	  firefox https://developer.download.nvidia.com/sdkmanager/redirects/sdkmanager-deb.html &
+	}
+
+	EOF

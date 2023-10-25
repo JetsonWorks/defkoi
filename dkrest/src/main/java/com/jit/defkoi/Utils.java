@@ -13,8 +13,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 public class Utils {
   private static final Logger logger = LoggerFactory.getLogger(CameraPipeline.class);
@@ -94,6 +97,14 @@ public class Utils {
     if(efs.stream().anyMatch(x -> x.getName().equals("nvvideosink")))
       return true;
     return false;
+  }
+
+  public static boolean detectDockerContainer() {
+    try (Stream<String> stream = Files.lines(Paths.get("/proc/1/cgroup"))) {
+      return stream.anyMatch(line -> line.contains("/docker"));
+    } catch(IOException e) {
+      return false;
+    }
   }
 
   public static List<String> captureNvargusCaps(int sensorId) throws IOException {

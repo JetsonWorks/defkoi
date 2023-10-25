@@ -14,7 +14,7 @@ import { AgGridReact } from 'ag-grid-react';
 
 import { areCachesLoaded, checkCacheItems, entitiesNotLoaded, } from "../features/cache/CacheSlice";
 
-import { addIcon, arrowRightIcon, arrowUpIcon, editIcon, refreshIcon, retiredIcon, trashIcon, } from '../media';
+import { addIcon, arrowRightIcon, arrowUpIcon, refreshIcon, retiredIcon, trashIcon, } from '../media';
 import {
   EntityMultiSelectCellEditor,
   EntityMultiSelectCellEditorCreatable,

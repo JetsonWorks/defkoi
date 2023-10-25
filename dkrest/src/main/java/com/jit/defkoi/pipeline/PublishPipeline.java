@@ -38,6 +38,8 @@ public class PublishPipeline extends SentryPipeline {
       String url = String.format("%sobject/%s", config.getRtspProxyUrl(), rootName.replaceAll(" ", ""));
       ObjectPublisher objectPublisher = context.createObjectPublisher();
       logger.info("Publishing object images to " + url);
+      int protos =
+        config.isDockerized() ? RtspProtocol.tcp.getBit() : RtspProtocol.bitOr(RtspProtocol.udp, RtspProtocol.tcp);
       //@formatter:off
       Pipe tee = Pipe.appSource(pipeline, "objectPublisher")
         .needDataListener(objectPublisher).enoughDataListener(objectPublisher)
@@ -51,7 +53,7 @@ public class PublishPipeline extends SentryPipeline {
       tee
         .link(Pipe.lay(pipeline, "queue", "objectRtspQueue").set("max-size-buffers", config.getQueueMaxSize()))
         .link(Pipe.lay(pipeline, "rtspclientsink", "objectRtsp")
-          .set("location", url).set("protocols", RtspProtocol.bitOr(RtspProtocol.tcp)));
+          .set("location", url).set("protocols", protos));
       //@formatter:on
 
       pipeline.getBus().connect((Bus.EOS)this::endOfStream);
